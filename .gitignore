@@ -3,6 +3,8 @@
 .LSOverride
 Icon
 .idea
+build
+dist
 
 # Thumbnails
 ._*
@@ -16,3 +18,4 @@ theOpList.json
 myConfig.py
 *.pyc
 *.sqlite
+*.egg-info
