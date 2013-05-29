@@ -9,7 +9,7 @@ test_requirements = []
 setup(
     name="ttpbot",
     version='0.0.1',
-    description="Python bot",
+    description="Turtable.fm Python bot",
     packages=['ttpbot'],
     install_requires=['ttapi==1.2.0'] + test_requirements,
     scripts  = [
