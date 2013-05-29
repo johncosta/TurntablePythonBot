@@ -11,7 +11,7 @@ setup(
     version='0.0.1',
     description="Python bot",
     packages=['ttpbot'],
-    install_requires=[] + test_requirements,
+    install_requires=['ttapi==1.2.0'] + test_requirements,
     scripts  = [
         'bin/ttpbot'
     ],
