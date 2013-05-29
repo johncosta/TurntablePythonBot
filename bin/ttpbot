@@ -14,5 +14,5 @@ if __name__ == "__main__":
     owner_id = os.environ.get('USER_ID', sys.argv[4])
 
     print "Starting bot: {0} - {1}".format(user_id, room_id)
-    bot = TTpBot(auth_key, user_id, room_id=room_id, owner_id=ownerID)
+    bot = TTpBot(auth_key, user_id, room_id=room_id, owner_id=owner_id)
     bot.start()
