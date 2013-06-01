@@ -1,5 +1,7 @@
 from ttapi import Bot
 
+from ttpbot import utils
+
 
 class User(object):
 
@@ -68,6 +70,8 @@ class TTpBot(Bot):
         self.owner_id = kwargs.pop('owner_id', None)
         super(TTpBot, self).__init__(*args, **kwargs)
 
+        self.logger = utils.configure_logger(self.__class__)
+
         self.bot_id = args[1]
         self.operators.append(self.owner_id) if self.owner_id else None
 
@@ -102,22 +106,22 @@ class TTpBot(Bot):
             with open(file_name,'r') as file_contents:
                 file_lines = file_contents.readlines()
         except IOError:
-            # todo logger
-            print "The file %s was not found. Help may not work.".format(
-                file_name)
+            self.logger.error(
+                "The file %s was not found. Help may not work.".format(
+                file_name))
         return file_lines
 
     def _roomInfo(self, data):
 
-        print "In room info"
+        self.logger.debug("In room info")
         room = Room(data.get('room'))
-        print "Room Data: {0}".format(room.__dict__)
+        self.logger.debug("Room Data: {0}".format(room.__dict__))
 
         self.room_djs = room.djs
-        print "Room djs: {0}".format(room.djs)
+        self.logger.debug("Room djs: {0}".format(room.djs))
 
         self.current_dj = room.current_dj
-        print "Current DJ: {0}".format(room.current_dj)
+        self.logger.debug("Current DJ: {0}".format(room.current_dj))
 
     def _bot_should_dj(self, bot_id, dj_ids):
         """ Only dj if there's less than 2 people in the room
@@ -139,12 +143,12 @@ class TTpBot(Bot):
         """
         user = User(data.get('user').get(0))
 
-        print "Adding user ({0})".format(user.userid)
+        self.logger.debug("Adding user ({0})".format(user.userid))
         self.users.update({user.userid: user})
 
         msg = 'Hello {0}. Type !help to see what I can do'.format(user.name)
         self.speak(msg)
-        print msg
+        self.logger.debug(msg)
 
     def deregistered(self, data):
         """
@@ -162,23 +166,23 @@ class TTpBot(Bot):
         text = data['text']
         userID = data['userid']
 
-        print '{0} just said \"{1}\"'.format(name, text)
+        self.logger.debug('{0} just said \"{1}\"'.format(name, text))
 
     def room_changed(self, data):
         """ information about the room
         """
-        print "In room changed"
+        self.logger.debug("In room changed")
         room = Room(data.get('room'))
-        print "Room Data: {0}".format(room.__dict__)
+        self.logger.debug("Room Data: {0}".format(room.__dict__))
 
         self.room_djs = room.djs
-        print "Room djs: {0}".format(room.djs)
+        self.logger.debug("Room djs: {0}".format(room.djs))
 
         self.users = {}
         user_list = [User(user) for user in data.get('users')]
         for user in user_list:
             self.users.update({user.userid: user})
-        print "Room users: {0}".format(self.users)
+        self.logger.debug("Room users: {0}".format(self.users))
 
         self._bot_should_dj(self.bot_id, self.room_djs)
         #
@@ -213,14 +217,14 @@ class TTpBot(Bot):
         """
         """
         self.room_djs = [v for k, v  in data.get('djs', None).iteritems()]
-        print "Room djs: {0}".format(self.room_djs)
+        self.logger.debug("Room djs: {0}".format(self.room_djs))
         self._bot_should_dj(self.bot_id, self.room_djs)
 
     def dj_stepped_down(self, data):
         """
         """
         self.room_djs = [v for k, v  in data.get('djs', None).iteritems()]
-        print "Room djs: {0}".format(self.room_djs)
+        self.logger.debug("Room djs: {0}".format(self.room_djs))
         self._bot_should_dj(self.bot_id, self.room_djs)
 
 
