@@ -1,3 +1,5 @@
+import time
+
 from ttapi import Bot
 
 from ttpbot import utils
@@ -70,6 +72,10 @@ class TTpBot(Bot):
         self.owner_id = kwargs.pop('owner_id', None)
         super(TTpBot, self).__init__(*args, **kwargs)
 
+        # This seems like a bug in the api. Speak requires roomID to be set
+        # but init requires room_id
+        self.roomId = kwargs.pop('room_id', None)
+
         self.logger = utils.configure_logger(self.__class__)
 
         self.bot_id = args[1]
@@ -115,7 +121,7 @@ class TTpBot(Bot):
 
         self.logger.debug("In room info")
         room = Room(data.get('room'))
-        self.logger.debug("Room Data: {0}".format(room.__dict__))
+        #self.logger.debug("Room Data: {0}".format(room.__dict__))
 
         self.room_djs = room.djs
         self.logger.debug("Room djs: {0}".format(room.djs))
@@ -138,33 +144,39 @@ class TTpBot(Bot):
         if len(dj_ids) > 2 and bot_id in dj_ids:
             return self.remDj(bot_id)
 
+    def talk(self, msg):
+        """ Wrapper for speak, encapsulates the time delay """
+        time.sleep(1)
+        self.speak(msg)
+
     def registered(self, data):
         """
         """
-        user = User(data.get('user').get(0))
+        self.logger.debug("Enter registered")
+        self.logger.debug("Data: {0}".format(data))
+        user = User(data.get('user')[0])
 
-        self.logger.debug("Adding user ({0})".format(user.userid))
+        self.logger.debug("Adding user ({0})".format(user.name))
         self.users.update({user.userid: user})
 
         msg = 'Hello {0}. Type !help to see what I can do'.format(user.name)
-        self.speak(msg)
-        self.logger.debug(msg)
+        self.talk(msg)
 
     def deregistered(self, data):
         """
         """
-        user = User(data.get('user').get(0))
+        self.logger.debug("Enter deregistered")
+        self.logger.debug("Data: {0}".format(data))
+        user = User(data.get('user')[0])
+
+        self.logger.debug("Removing user ({0})".format(user.userid))
         self.users.pop(user.user_id, None)
 
-        self.speak('Bummer that {0} left.'.format(user.name))
-
-
     def parrot(self, data):
-        """ Used for parsing commands.
-        """
+        """ Used for parsing commands. """
         name = data['name']
         text = data['text']
-        userID = data['userid']
+        user_id = data['userid']
 
         self.logger.debug('{0} just said \"{1}\"'.format(name, text))
 
@@ -173,7 +185,7 @@ class TTpBot(Bot):
         """
         self.logger.debug("In room changed")
         room = Room(data.get('room'))
-        self.logger.debug("Room Data: {0}".format(room.__dict__))
+        #self.logger.debug("Room Data: {0}".format(room.__dict__))
 
         self.room_djs = room.djs
         self.logger.debug("Room djs: {0}".format(room.djs))

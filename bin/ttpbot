@@ -13,6 +13,8 @@ if __name__ == "__main__":
     room_id = os.environ.get('ROOM_ID', sys.argv[3])
     owner_id = os.environ.get('OWNER_ID', sys.argv[4])
 
-    print "Starting bot: {0} - {1}".format(user_id, room_id)
+    print "Starting bot: \n  User: {0}\n  Room: {1}".format(
+        user_id, room_id)
     bot = TTpBot(auth_key, user_id, room_id=room_id, owner_id=owner_id)
     bot.start()
+    print "Bot shutdown."
