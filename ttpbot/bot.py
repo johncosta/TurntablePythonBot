@@ -52,28 +52,25 @@ class Room(object):
 
 class TTpBot(Bot):
 
-    help_message = None
-    op_message = None
-
     operators = []
     users = {}
     bop_list = {}
-    #dj_queue = []
     room_djs = []
-    max_dj_count = 1
-    room_theme = None
-
-    current_song = None
-    current_dj_id = None
 
     def __init__(self, *args, **kwargs):
         """ Initializes the Bot
+
+        :param auth_key: Authorization key, specific to your user
+        :param user_id: Turntable.fm id for the bot
+        :param room_id: Initial Turntable.fm room id for the bot
+        :param ownerID: Owner id of the bot. this is your non-bot Turntable.fm
+        id
         """
         self.owner_id = kwargs.pop('owner_id', None)
         super(TTpBot, self).__init__(*args, **kwargs)
 
-        # This seems like a bug in the api. Speak requires roomID to be set
-        # but init requires room_id
+        # This seems like a bug in the api. Speak requires
+        # roomID to be set but init requires room_id
         self.roomId = kwargs.pop('room_id', None)
 
         self.logger = utils.configure_logger(self.__class__)
@@ -81,10 +78,6 @@ class TTpBot(Bot):
         self.bot_id = args[1]
         self.operators.append(self.owner_id) if self.owner_id else None
 
-        self.help_message = self._load("help.txt")
-        self.op_message = self._load("op.txt")
-
-        # Features supported
         self.on('roomChanged', self.room_changed)
         self.on('registered', self.registered)
         self.on('deregistered', self.deregistered)
@@ -94,6 +87,8 @@ class TTpBot(Bot):
         self.on('nosong', self.no_song)
         self.on('add_dj', self.dj_stepped_up)
         self.on('rem_dj', self.dj_stepped_down)
+
+        self.commands = self._build_commands()
 
         # self.on('update_votes',  updateVotes)
         # self.on('pmmed',         privateMessage)
@@ -106,6 +101,19 @@ class TTpBot(Bot):
         # self.on('rem_moderator', remModerator)
 
         # TODO initialize database
+
+    def _build_commands(self):
+        """ Builds the command list. There are two types of commands.
+
+                1) Parrot commands - users can say text and the bot will
+                    speak some usually, witty command
+                2) Operator command - this executes some sort of logic
+                    that executes an method, usually some sort of
+                    queue management operation
+        """
+        pass
+        #self._load("help.txt")
+        #self.op_message = self._load("op.txt")
 
     def _load(self, file_name, file_lines=None):
         try:
@@ -150,7 +158,8 @@ class TTpBot(Bot):
         self.speak(msg)
 
     def registered(self, data):
-        """
+        """ Registered seems to occur when a user enters the room.  This could
+        be the bot itself or another user.
         """
         self.logger.debug("Enter registered")
         self.logger.debug("Data: {0}".format(data))
@@ -163,7 +172,8 @@ class TTpBot(Bot):
         self.talk(msg)
 
     def deregistered(self, data):
-        """
+        """ Deregistered seems to occur when a user exists the room.  This
+        could be the bot itself or another user.
         """
         self.logger.debug("Enter deregistered")
         self.logger.debug("Data: {0}".format(data))
@@ -173,7 +183,10 @@ class TTpBot(Bot):
         self.users.pop(user.user_id, None)
 
     def parrot(self, data):
-        """ Used for parsing commands. """
+        """ When someone speaks in the channel, this handler is used to capture
+        and parse the output looking for bot commands. We don't want to shadow
+        the bot method `speak` so the alternate method name `parrot` is used.
+        """
         name = data['name']
         text = data['text']
         user_id = data['userid']
@@ -226,17 +239,15 @@ class TTpBot(Bot):
         self._bot_should_dj(self.bot_id, self.room_djs)
 
     def dj_stepped_up(self, data):
-        """
+        """ Handler for when a dj steps up
         """
         self.room_djs = [v for k, v  in data.get('djs', None).iteritems()]
         self.logger.debug("Room djs: {0}".format(self.room_djs))
         self._bot_should_dj(self.bot_id, self.room_djs)
 
     def dj_stepped_down(self, data):
-        """
+        """ Handler for when a dj steps down
         """
         self.room_djs = [v for k, v  in data.get('djs', None).iteritems()]
         self.logger.debug("Room djs: {0}".format(self.room_djs))
         self._bot_should_dj(self.bot_id, self.room_djs)
-
-
