@@ -1,4 +1,2 @@
 ttapi==1.2.0
-
-# for unit tests
-unittest2
+PyYAML==3.10
