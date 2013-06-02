@@ -44,5 +44,5 @@ private message with me:
 ===================
 Running with Docker
 ===================
-docker run -d johncosta/turntablebot /usr/local/bin/ttpbot -e ['AUTH_KEY': '<authkey>','USER_ID':'<userid>', 'ROOM_ID':'<roomid>', 'OWNER_ID':'<ownerid>']
+docker run -d johncosta/turntablebot /usr/local/bin/ttpbot <authkey> <userid> <roomid> <ownerid> <path_to_command.yml>
 
