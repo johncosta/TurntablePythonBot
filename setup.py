@@ -10,7 +10,10 @@ setup(
     name="ttpbot",
     version='0.0.2',
     description="Turtable.fm Python bot",
-    packages=['ttpbot'],
+    packages=[
+        'ttpbot',
+        'ttpbot.commands',
+        'ttpbot.ttresponse'],
     install_requires=['ttapi==1.2.0'] + test_requirements,
     scripts  = [
         'bin/ttpbot'

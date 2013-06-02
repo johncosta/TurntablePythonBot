@@ -3,18 +3,31 @@ import time
 from ttapi import Bot
 
 from ttpbot import utils
+from ttpbot.commands import BotCommands, TextCommand, OperationCommand
+from ttpbot.ttresponse.speak import Speak
+
 from ttresponse import User, Room
 
 
 class TTpBot(Bot):
+    """ Turntable Python Bot """
 
+    # Internal list of bot operators
     operators = []
+
+    # Internal list of users in the room
     users = {}
-    bop_list = {}
+
+    # Internal list of djs currently in the room
     room_djs = []
 
+    # object used for building the command list and interpreting room commands
+    commands = BotCommands()
+
+
     def __init__(self, *args, **kwargs):
-        """ Initializes the Bot
+        """ Initializes the Bot by setting appropriate credentials,
+        initializing logging, and binding callbacks.
 
         :param auth_key: Authorization key, specific to your user
         :param user_id: Turntable.fm id for the bot
@@ -44,8 +57,6 @@ class TTpBot(Bot):
         self.on('add_dj', self.dj_stepped_up)
         self.on('rem_dj', self.dj_stepped_down)
 
-        self.commands = self._build_commands()
-
         # self.on('update_votes',  updateVotes)
         # self.on('pmmed',         privateMessage)
         # self.on('add_dj',        djSteppedUp)
@@ -57,29 +68,6 @@ class TTpBot(Bot):
         # self.on('rem_moderator', remModerator)
 
         # TODO initialize database
-
-    def _build_commands(self):
-        """ Builds the command list. There are two types of commands.
-
-                1) Parrot commands - users can say text and the bot will
-                    speak some usually, witty command
-                2) Operator command - this executes some sort of logic
-                    that executes an method, usually some sort of
-                    queue management operation
-        """
-        pass
-        #self._load("help.txt")
-        #self.op_message = self._load("op.txt")
-
-    def _load(self, file_name, file_lines=None):
-        try:
-            with open(file_name,'r') as file_contents:
-                file_lines = file_contents.readlines()
-        except IOError:
-            self.logger.error(
-                "The file %s was not found. Help may not work.".format(
-                file_name))
-        return file_lines
 
     def _roomInfo(self, data):
 
@@ -109,7 +97,10 @@ class TTpBot(Bot):
             return self.remDj(bot_id)
 
     def talk(self, msg):
-        """ Wrapper for speak, encapsulates the time delay """
+        """ Wrapper for speak, encapsulates the time delay. Time delay is added
+        for when the user first enters the room. Sometimes the message is
+        presented before the message is displayed on the new users screen
+        """
         time.sleep(1)
         self.speak(msg)
 
@@ -143,11 +134,23 @@ class TTpBot(Bot):
         and parse the output looking for bot commands. We don't want to shadow
         the bot method `speak` so the alternate method name `parrot` is used.
         """
-        name = data['name']
-        text = data['text']
-        user_id = data['userid']
+        self.logger.debug("In parrot")
+        self.logger.debug("Data in Parrot: {0}".format(data))
+        speak = Speak(data)
 
-        self.logger.debug('{0} just said \"{1}\"'.format(name, text))
+        self.logger.debug('{0} just said \"{1}\"'.format(speak.name, speak.text))
+        command = self.commands.interpret(speak.text)
+
+        # I really want to say command.execute() here
+        if command and isinstance(command, TextCommand):
+            try:
+                self.talk(command.value.format(**data))
+            except Exception, e:
+                print e
+
+        if command and isinstance(command, OperationCommand):
+            pass
+
 
     def room_changed(self, data):
         """ information about the room

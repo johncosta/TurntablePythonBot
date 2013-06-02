@@ -1,5 +1,9 @@
 
 class User(object):
+    """ Object used to represent a User from response data.  This objects
+    members can be "dot" accessed as long as their present.  It is assumed that
+    user data is consistent.
+    """
 
     def __init__(self, data):
         """
