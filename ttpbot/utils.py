@@ -28,7 +28,7 @@ def configure_logger(cls, log_level=None, stream_handling=True):
 def load_file(file_name, file_lines=None, logger=None):
     """ Utility method for loading any configuration files. """
     try:
-        with open(file_name,'r') as file_contents:
+        with open(file_name, 'r') as file_contents:
             file_lines = file_contents.readlines()
     except IOError:
         if logger:

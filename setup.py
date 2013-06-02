@@ -8,7 +8,7 @@ SOURCE_DIR = os.path.join(ROOT_DIR)
 test_requirements = []
 setup(
     name="ttpbot",
-    version='0.0.2',
+    version='0.0.3',
     description="Turtable.fm Python bot",
     packages=[
         'ttpbot',

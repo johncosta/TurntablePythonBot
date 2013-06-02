@@ -55,4 +55,3 @@ class BotCommands(dict):
         # parse for a command
         command = self._parse(msg, self, self.DEFAULT_COMMAND_PREFIX)
         return command
-

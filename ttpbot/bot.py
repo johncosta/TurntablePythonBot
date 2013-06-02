@@ -1,4 +1,5 @@
 import time
+import yaml
 
 from ttapi import Bot
 
@@ -36,6 +37,7 @@ class TTpBot(Bot):
         id
         """
         self.owner_id = kwargs.pop('owner_id', None)
+        self.command_file = kwargs.pop('commands_file', None)
         super(TTpBot, self).__init__(*args, **kwargs)
 
         # This seems like a bug in the api. Speak requires
@@ -56,6 +58,15 @@ class TTpBot(Bot):
         self.on('nosong', self.no_song)
         self.on('add_dj', self.dj_stepped_up)
         self.on('rem_dj', self.dj_stepped_down)
+
+        if self.command_file:
+            try:
+                self.logger.debug("command_file: {0}".format(self.command_file))
+                self.commands = yaml.load(open(self.command_file, 'r'))
+            except Exception, e:
+                self.logger.error(e)
+                self.logger.info("Using default command list due to error.")
+                self.commands = BotCommands()
 
         # self.on('update_votes',  updateVotes)
         # self.on('pmmed',         privateMessage)
@@ -101,7 +112,7 @@ class TTpBot(Bot):
         for when the user first enters the room. Sometimes the message is
         presented before the message is displayed on the new users screen
         """
-        time.sleep(1)
+        #time.sleep(1)
         self.speak(msg)
 
     def registered(self, data):
@@ -150,7 +161,6 @@ class TTpBot(Bot):
 
         if command and isinstance(command, OperationCommand):
             pass
-
 
     def room_changed(self, data):
         """ information about the room

@@ -1,1 +1,12 @@
+# yml serialized version of commands.
+!!python/object/new:ttpbot.commands.command.BotCommands
+dictitems:
+  hello: !!python/object:ttpbot.commands.command.TextCommand
+    args: !!python/tuple [user]
+    key: hello
+    value: Welcome, {name}!
 
+  insult: !!python/object:ttpbot.commands.command.TextCommand
+    args: !!python/tuple [user]
+    key: insult
+    value: See what happens if you offend me...

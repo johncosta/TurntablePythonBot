@@ -8,13 +8,19 @@ from ttpbot import TTpBot
 if __name__ == "__main__":
     # TODO define yml file for these configs
     # TODO use passed values as params
+    # TODO clean this up to be a little more user friendly
     auth_key = os.environ.get('AUTH_KEY', sys.argv[1])
     user_id = os.environ.get('USER_ID', sys.argv[2])
     room_id = os.environ.get('ROOM_ID', sys.argv[3])
     owner_id = os.environ.get('OWNER_ID', sys.argv[4])
 
-    print "Starting bot: \n  User: {0}\n  Room: {1}".format(
-        user_id, room_id)
-    bot = TTpBot(auth_key, user_id, room_id=room_id, owner_id=owner_id)
+    if sys.argv[5]:
+        commands_file = sys.argv[5]
+    else:
+        commands_file = os.environ.get('COMMANDS_FILE', None)
+
+    print "Starting bot: \n  User: {0}\n  Room: {1}\n Commands file: {2}".format(
+        user_id, room_id, commands_file)
+    bot = TTpBot(auth_key, user_id, room_id=room_id, owner_id=owner_id, commands_file=commands_file)
     bot.start()
     print "Bot shutdown."
