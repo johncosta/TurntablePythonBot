@@ -14,7 +14,9 @@ setup(
         'ttpbot',
         'ttpbot.commands',
         'ttpbot.ttresponse'],
-    install_requires=['ttapi==1.2.0'] + test_requirements,
+    install_requires=[
+        'ttapi==1.2.0',
+        'PyYAML==3.10'] + test_requirements,
     scripts  = [
         'bin/ttpbot'
     ],
