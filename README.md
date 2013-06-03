@@ -41,6 +41,12 @@ private message with me:
 * theme = <room theme> : set & announce the theme for the room
 * die : cause the python process to exit. Can only be executed by the owner.
 
+=====================
+Provisioning hardware
+=====================
+https://help.github.com/articles/generating-ssh-keys
+
+
 ===================
 Running with Docker
 ===================

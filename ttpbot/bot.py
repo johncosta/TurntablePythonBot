@@ -25,6 +25,10 @@ class TTpBot(Bot):
     # object used for building the command list and interpreting room commands
     commands = BotCommands()
 
+    # http://faq.turntable.fm/customer/portal/articles/
+    # 258935-are-there-any-rules-for-bots-
+    # By default this is disabled. Use at your own risk
+    bot_should_dj = False
 
     def __init__(self, *args, **kwargs):
         """ Initializes the Bot by setting appropriate credentials,
@@ -38,6 +42,7 @@ class TTpBot(Bot):
         """
         self.owner_id = kwargs.pop('owner_id', None)
         self.command_file = kwargs.pop('commands_file', None)
+        self.bot_should_dj = kwargs.pop('bot_should_dj', self.bot_should_dj)
         super(TTpBot, self).__init__(*args, **kwargs)
 
         # This seems like a bug in the api. Speak requires
@@ -98,14 +103,13 @@ class TTpBot(Bot):
         :param bot_id: id of this bot
         :param dj_ids: list of current djs
         """
-        if len(dj_ids) == 0:
-            return self.addDj()
-
-        if len(dj_ids) == 1 and bot_id not in dj_ids:
-            return self.addDj()
-
-        if len(dj_ids) > 2 and bot_id in dj_ids:
-            return self.remDj(bot_id)
+        if self.bot_should_dj:
+            if len(dj_ids) == 0:
+                return self.addDj()
+            if len(dj_ids) == 1 and bot_id not in dj_ids:
+                return self.addDj()
+            if len(dj_ids) > 2 and bot_id in dj_ids:
+                return self.remDj(bot_id)
 
     def talk(self, msg):
         """ Wrapper for speak, encapsulates the time delay. Time delay is added
