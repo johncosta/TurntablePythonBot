@@ -19,8 +19,13 @@ if __name__ == "__main__":
     else:
         commands_file = os.environ.get('COMMANDS_FILE', None)
 
+    if sys.argv[6]:
+        bot_should_dj = True
+    else:
+        bot_should_dj = False
+
     print "Starting bot: \n  User: {0}\n  Room: {1}\n Commands file: {2}".format(
         user_id, room_id, commands_file)
-    bot = TTpBot(auth_key, user_id, room_id=room_id, owner_id=owner_id, commands_file=commands_file)
+    bot = TTpBot(auth_key, user_id, room_id=room_id, owner_id=owner_id, commands_file=commands_file, bot_should_dj=bot_should_dj)
     bot.start()
     print "Bot shutdown."

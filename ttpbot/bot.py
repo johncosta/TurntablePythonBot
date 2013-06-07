@@ -28,7 +28,7 @@ class TTpBot(Bot):
     # http://faq.turntable.fm/customer/portal/articles/
     # 258935-are-there-any-rules-for-bots-
     # By default this is disabled. Use at your own risk
-    bot_should_dj = False
+    bot_should_dj = True
 
     def __init__(self, *args, **kwargs):
         """ Initializes the Bot by setting appropriate credentials,
